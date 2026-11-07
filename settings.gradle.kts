@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PAUSELINK"
 include(":app")
- 
+include(":analyzer")
