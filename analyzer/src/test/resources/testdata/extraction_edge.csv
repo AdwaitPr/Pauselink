@@ -1,0 +1,24 @@
+id,input,expected_count,expected_urls
+B10,e.g. report.final and notes.txt,0,
+B11,(see https://example.com/a_(b)),1,https://example.com/a_(b)
+B12,Visit example.com.,1,example.com
+B13,HTTPS://EXAMPLE.COM/,1,HTTPS://EXAMPLE.COM/
+EDGE_01,<https://example.com>,1,https://example.com
+EDGE_02,"https://example.com",1,https://example.com
+EDGE_03,'https://example.com',1,https://example.com
+EDGE_04,"Check https://example.com, and https://example.org;",2,https://example.com|https://example.org
+EDGE_05,https://example.com/wiki/Rust_(programming_language),1,https://example.com/wiki/Rust_(programming_language)
+EDGE_06,((https://example.com/path)),1,https://example.com/path
+EDGE_07,[https://example.com],1,https://example.com
+EDGE_08,{https://example.com},1,https://example.com
+EDGE_09,example.com/login?foo=bar,1,example.com/login?foo=bar
+EDGE_10,Download report.zip and video.mov,0,
+EDGE_11,Download report.zip/get and video.mov/play,2,report.zip/get|video.mov/play
+EDGE_12,Visit www.report.zip,1,www.report.zip
+EDGE_13,See https://example.com and https://example.com again,1,https://example.com
+EDGE_14,,0,
+EDGE_15,"   ",0,
+EDGE_16,Meeting at 5pm in the conference room.,0,
+EDGE_17,Contact alice@example.com for info,0,
+EDGE_18,Info(https://example.com/docs),1,https://example.com/docs
+EDGE_19,https://ex\u200Bample.com,1,https://ex\u200Bample.com
