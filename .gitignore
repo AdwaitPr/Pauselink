@@ -20,5 +20,6 @@ node_modules/
 .turbo/
 .next/
 dist/
+dist-test/
 out/
 .env*.local

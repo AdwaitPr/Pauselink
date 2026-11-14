@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test dist/**/*.test.js || true"
+    "test": "tsc -p tsconfig.test.json && node --test dist-test/tests/**/*.test.js"
   },
   "dependencies": {
     "@pauselink/types": "*",
