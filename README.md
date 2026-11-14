@@ -1,202 +1,145 @@
 # PauseLink 🔗🛡️
 
-> **Offline-first, deterministic, explainable suspicious-link and message analysis for Android.**
+> **Full-Stack, Cross-Platform Suspicious-Link & Threat Analysis Engine**
+> Native Android (Compose + Kotlin) & Web Application (Next.js 15 + Supabase Realtime) with Zero-Network Deterministic Heuristics.
 
-[![Android](https://img.shields.io/badge/Platform-Android-3DDC84.svg?style=flat&logo=android)](https://developer.android.com)
+[![Android](https://img.shields.io/badge/Platform-Android%20%7C%20Web-3DDC84.svg?style=flat&logo=android)](https://developer.android.com)
+[![Next.js 15](https://img.shields.io/badge/Web-Next.js%2015-black.svg?style=flat&logo=next.js)](https://nextjs.org)
+[![Supabase](https://img.shields.io/badge/Backend-Supabase%20Realtime-3ECF8E.svg?style=flat&logo=supabase)](https://supabase.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-7F52FF.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
-[![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4.svg?style=flat&logo=jetpackcompose)](https://developer.android.com/jetpack/compose)
-[![MinSdk](https://img.shields.io/badge/MinSdk-26%20(Android%208.0)-brightgreen.svg)]()
-[![TargetSdk](https://img.shields.io/badge/TargetSdk-37-blue.svg)]()
-[![Zero Network](https://img.shields.io/badge/INTERNET%20Permission-NONE%20(0)-red.svg)]()
-[![Deterministic](https://img.shields.io/badge/Engine-100%25%20Deterministic-orange.svg)]()
+[![Turborepo](https://img.shields.io/badge/Monorepo-Turborepo-EF4444.svg?style=flat&logo=turborepo)](https://turbo.build)
+[![Zero Network Core](https://img.shields.io/badge/Analyzer%20Engine-100%25%20Deterministic%20Offline-orange.svg)]()
 
 ---
 
 ## 📖 Overview
 
-**PauseLink** is a privacy-first native Android security tool engineered to analyze suspicious links, phishing SMS messages, and QR payloads without compromising user confidentiality or device safety.
+**PauseLink** is a privacy-first, cross-platform security platform engineered to analyze suspicious links, phishing SMS messages, and QR payloads without compromising user confidentiality or device safety.
 
-Unlike conventional security apps and cloud scanners that send links to external servers (risking token leaks, tracking exposure, webhook triggers, or drive-by compromises), **PauseLink operates with zero network access**. All analysis is performed entirely on-device using a pure, deterministic Kotlin heuristic engine.
+Unlike conventional security apps and cloud scanners that send links to external servers (risking token leaks, tracking exposure, webhook triggers, or drive-by compromises), **PauseLink's core analyzer operates with zero external network resolution**. All heuristic analysis is performed entirely offline using deterministic Kotlin and TypeScript engines with 100% test vector parity.
 
-PauseLink does not declare the `android.permission.INTERNET` permission, never fetches or expands web links, and enforces a strict architectural boundary ensuring raw URLs and personal message texts are never logged or transmitted.
+The system features:
+- **Native Android App** (`apps/android`): Jetpack Compose, Material 3, Hilt, Room, and pure Kotlin/JVM `:analyzer`.
+- **Next.js 15 Web Console** (`apps/web`): React 19, Tailwind CSS, TanStack Query, live threat terminal, and reactive audit logs.
+- **Supabase Realtime Cloud Sync** (`packages/supabase-config`): Bidirectional WebSocket synchronization using PostgreSQL 16 Change Data Capture (CDC), Row-Level Security (RLS), and a 6-digit device pairing protocol.
+- **Shared Type Safety** (`packages/types`): End-to-end typed contracts (`@pauselink/types`).
 
 ---
 
-## 🏛️ Architecture & Module Structure
-
-PauseLink is designed as a decoupled, multi-module project enforcing strict separation between Android platform code and core security analysis logic:
+## 🏛️ Full-Stack Monorepo Architecture
 
 ```
 PAUSELINK/
-├── analyzer/                 # Pure Kotlin/JVM Module (Zero Android dependencies)
-│   ├── src/main/kotlin/com/clickretina/pauselink/analyzer/
-│   │   ├── AnalyzerConfig.kt # Configurable limits (10k chars, 10 links, 2048 max URL)
-│   │   ├── model/            # Domain models (RuleId, Finding, LinkReport, RiskAssessment)
-│   │   ├── extract/          # ReDoS-resistant linear URL extraction & sanitization
-│   │   └── unicode/          # Invisible and bidirectional Unicode character detection
-│   └── src/main/resources/   # Bundled IANA/ICANN TLD registry
-│
-├── app/                      # Android Application Module
-│   ├── src/main/java/com/clickretina/pauselink/
-│   │   ├── PauseLinkApplication.kt  # @HiltAndroidApp application entrypoint
-│   │   ├── MainActivity.kt          # Single-activity container with adjustResize
-│   │   ├── di/                      # Dependency Injection (Hilt + Coroutine dispatchers)
-│   │   ├── navigation/              # Type-safe Jetpack Navigation Compose (@Serializable)
-│   │   ├── platform/                # AppLogger (Zero-leak structured metric logging)
-│   │   └── ui/                      # Jetpack Compose UI (Theme, Scaffold, Screens)
-│   └── src/main/res/                # Material 3 themes, icons, and localized resources
-│
-└── docs/                     # Architectural specifications and engineering notes
-    ├── PauseLink_Blueprint.md       # Comprehensive technical blueprint
-    ├── ENGINEERING_NOTES.md         # Incident logs and toolchain records
-    └── VERSIONS.md                  # Pinned and verified library versions
+├── apps/
+│   ├── android/                  # Native Android application
+│   │   ├── analyzer/             # Pure Kotlin/JVM threat extraction engine (zero network)
+│   │   ├── app/                  # Compose UI, Navigation, Hilt DI, Cloud Sync layer
+│   │   └── build.gradle.kts
+│   └── web/                      # Next.js 15 full-stack application
+│       ├── app/                  # App Router: /, /history, /pair, /login
+│       ├── components/           # ScanTerminal, LiveHistoryTable, FindingDetailDialog
+│       ├── hooks/                # useRealtimeScans (Supabase CDC subscription)
+│       └── lib/analyzer/         # TypeScript port with 100% test parity
+├── packages/
+│   ├── types/                    # Shared DTOs and models (@pauselink/types)
+│   └── supabase-config/          # SQL migrations, RLS policies, pairing procedures
+├── docs/                         # Architecture blueprints & setup guides
+│   ├── CROSS_PLATFORM_SETUP.md   # Supabase & monorepo guide
+│   └── PauseLink_Blueprint.md    # Native Android blueprint
+└── turbo.json                    # Turborepo task pipeline
 ```
 
 ---
 
-## 🔄 Processing Pipeline
-
-PauseLink analyzes incoming text through a deterministic, linear processing pipeline:
+## 🔄 Cross-Platform Real-Time Flow
 
 ```mermaid
-flowchart TD
-    A[Raw Input: Pasted Text / Shared Text / QR Code] --> B[TextSanitizer]
-    B -->|Normalize CRLF to LF, Detect Hidden Unicode, Cap at 10,000 Chars| C[DefaultUrlExtractor]
-    C -->|Linear Scan, ICANN TLD Registry, Deduplication, File-Ext Guard| D[Candidate URLs]
-    D --> E[UrlParser & Normalizer]
-    E -->|Authority Splitting, Punycode Decoding, IPv4/IPv6 Detection| F[Rule Evaluation Engine]
-    F -->|Structural Rules, Brand Lookalike, Message Urgency Checks| G[Scorer & Aggregator]
-    G -->|Deterministic Ordering, Band Assignment| H[AnalysisReport]
-    H --> I[Compose Result UI: No-Click Safe Display & Explanations]
+sequenceDiagram
+    autonumber
+    actor User as User (Android / Web)
+    participant Android as Android App (Compose)
+    participant Web as Web Console (Next.js 15)
+    participant DB as Supabase (PostgreSQL + Realtime)
+
+    Note over Android,Web: 1. Instant 6-Digit Pairing
+    Web->>DB: rpc('generate_pairing_code') -> returns PIN
+    Android->>DB: rpc('link_device_with_code', PIN) -> Paired!
+
+    Note over Android,DB: 2. Android Threat Scan
+    User->>Android: Paste or Share SMS / URL
+    Android->>Android: Deterministic Analyzer (Offline)
+    Android->>DB: Sync ScanRecord (device_origin: 'ANDROID')
+    DB-->>Web: Realtime CDC WebSocket Event (INSERT)
+    Web->>Web: Update Live History Table Instantly
+
+    Note over Web,DB: 3. Web Threat Console Scan
+    User->>Web: Paste Link in Scan Terminal
+    Web->>Web: TypeScript Analyzer (Parity Engine)
+    Web->>DB: Sync ScanRecord (device_origin: 'WEB')
+    DB-->>Android: Realtime Notification / Sync
 ```
 
 ---
 
 ## 🛡️ Non-Negotiable Privacy & Security Guarantees
 
-- **No `INTERNET` Permission**: PauseLink has zero network code. It cannot perform HTTP requests, DNS queries, or socket connections.
-- **Never Fetches or Opens Links**: Links inside PauseLink are strictly non-clickable (`ClickableText` and `ACTION_VIEW` are banned). Users can only inspect and safely copy sanitized links.
-- **No Raw Input Logging**: The `AppLogger` contract permits logging only rule IDs, counts, durations, and exception class names. Raw URLs, hosts, paths, query parameters, and message contents are never logged.
-- **Display Spoofing Mitigation**: Bidirectional overrides (e.g. `U+202E`) and zero-width characters are explicitly flagged and tokenized to protect users from visual spoofing.
-- **ReDoS Immunity**: URL extraction uses linear character-by-character scanning with no nested regex quantifiers, provably immune to catastrophic backtracking.
-- **Explainable Results**: PauseLink never uses sensationalist labels like "virus" or "safe". It provides factual, educational breakdowns of observed signals and risk bands (`NO_WARNING_SIGNS`, `NOTICE`, `CAUTION`, `STRONG_WARNING`).
+1. **Deterministic Offline Analysis**: Neither the Android analyzer nor the Web analyzer connects to the internet to fetch, expand, or preview links. All findings are derived strictly from syntactic and morphological indicators.
+2. **Never Opens Links**: Links inside PauseLink are strictly non-clickable. Users can safely copy sanitized URLs.
+3. **Zero Raw Input Logging**: The `AppLogger` contract permits logging only rule IDs, counts, durations, and exception class names. Raw URLs, hosts, paths, query parameters, and message contents are never logged.
+4. **ReDoS Immunity**: URL extraction uses linear character-by-character scanning with no nested regex quantifiers, provably immune to catastrophic backtracking.
+5. **No Dangerous Sensationalism**: PauseLink avoids misleading binary labels like "virus" or "safe". It provides factual, educational breakdowns of observed signals and standardized risk bands (`NO_WARNING_SIGNS`, `NOTICE`, `CAUTION`, `STRONG_WARNING`).
 
 ---
 
-## 📱 User Interface & Navigation
+## 🚀 Quick Start & Development
 
-PauseLink features a modern, clean Jetpack Compose Material 3 interface organized into four primary top-level destinations with seamless bottom navigation:
-
-```mermaid
-graph LR
-    Home[🏠 Home Screen] <--> History[📜 History Screen]
-    Home <--> Settings[⚙️ Settings Screen]
-    Home <--> Privacy[🔒 Privacy Screen]
-    Settings <--> Privacy
-```
-
-### Screen Overview
-
-| Screen | Purpose & Architecture |
-|---|---|
-| **🏠 Home Screen** | Text input area for pasting or typing suspicious links/messages, quick action buttons (Analyze, Clear), input length indicators, and direct access to analysis. |
-| **📜 History Screen** | App-private, minimized local analysis history. Allows reviewing previous risk bands or clearing saved items with undo capabilities. |
-| **⚙️ Settings Screen** | Privacy-centric preferences (History storage toggle, QR code auto-scan settings) stored via DataStore Preferences. |
-| **🔒 Privacy Screen** | Complete transparency report explaining the app's zero-permission sandbox, data minimization policies, local processing limits, and security boundaries. |
-
----
-
-## 🚀 Recent Updates & Milestone Progress
-
-PauseLink is being developed strictly according to its engineering blueprint across twelve disciplined milestones:
-
-- [x] **M0: Toolchain & Baseline Setup**
-  - Configured Gradle 9.6, AGP 9.5.1, Kotlin 2.2.10, Java 17/25 JBR.
-  - Initialized isolated workspace and verified baseline dependencies in `docs/VERSIONS.md`.
-- [x] **M1: Project Skeleton & Navigation**
-  - Created pure Kotlin/JVM `:analyzer` module and connected it to `:app`.
-  - Configured Dagger Hilt 2.60.1 with KSP 2.2.10-2.0.2.
-  - Implemented typed `@Serializable` navigation routes in Navigation Compose 2.8.9.
-  - Implemented `AppLogger` privacy-guard logging architecture.
-  - Automated manifest permission audit verifying zero `INTERNET` and `ACCESS_NETWORK_STATE` permissions.
-- [x] **M2: Analyzer Foundation (Models, Sanitization & Extraction)**
-  - Implemented complete domain models (`RuleId`, `Finding`, `Evidence`, `LinkReport`, `AnalysisReport`).
-  - Implemented `InvisibleChars` and `TextSanitizer` (handling `U+00AD`, `U+200B-U+200F`, `U+202A-U+202E`, `U+2060-U+2064`, `U+2066-U+2069`, `U+FEFF`).
-  - Built `DefaultUrlExtractor` with linear non-backtracking scanner for `SCHEME_PREFIXED`, `WWW_PREFIXED`, and `BARE_DOMAIN`.
-  - Added TLD registry with bundled ICANN list and RFC 2606 test domains.
-  - Added common file extension protection (`.zip`, `.mov` require path or `www.`).
-  - Added table-driven test suite (`extraction_edge.csv`) and pathological timing tests (completed in < 170ms).
-- [ ] **M3: URL Parser, Punycode & Public Suffix List** *(Next)*
-- [ ] **M4: Structural URL Rules & Scorer**
-- [ ] **M5: Home $\rightarrow$ Result End-to-End Slice**
-- [ ] **M6: Brand Lookalike & Message Rules**
-- [ ] **M7: Finding Explanations & Resource Localization**
-- [ ] **M8: Android Share Sheet & Text Selection Integration**
-- [ ] **M9: Room Database & Minimized History**
-- [ ] **M10: Google Code Scanner (QR Support)**
-- [ ] **M11: UI Polish, Dark Theme & Accessibility**
-- [ ] **M12: Pre-Release Verification & Release APK**
-
----
-
-## 🛠️ Setup & Build Instructions
-
-### Prerequisites
-- **JDK**: Java 17 or Java 21 (or Android Studio's bundled JBR).
-- **Android Studio**: Android Studio Ladybug or newer.
-- **Android SDK**: `minSdk 26` (Android 8.0 Oreo), `compileSdk 37`, `targetSdk 37`.
-
-### Clone the Repository
-```bash
-git clone https://github.com/AdwaitPr/Pauselink.git
-cd Pauselink
-```
-
-### Build the Application
-To build the debug APK:
-```bash
-./gradlew :app:assembleDebug
-```
-The compiled APK will be located at:
-```
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-### Install APK via ADB
-If you have an Android device or emulator connected:
-```bash
-adb install app/build/outputs/apk/debug/app-debug.apk
-```
-
----
-
-## 🧪 Testing & Verification
-
-PauseLink maintains rigorous automated verification across modules:
+### 1. Web Application (`apps/web`)
 
 ```bash
-# Run pure Kotlin/JVM analyzer tests (23 tests: models, sanitization, extraction, ReDoS timing)
+# Install dependencies across all monorepo workspaces
+npm install
+
+# Build shared types package
+npm run build -w packages/types
+
+# Run unit tests for TypeScript analyzer (100% parity verified)
+npm run test -w apps/web
+
+# Start Next.js 15 development server
+npm run dev -w apps/web
+```
+Access the console at [http://localhost:3000](http://localhost:3000).
+
+### 2. Android Application (`apps/android`)
+
+```bash
+cd apps/android
+
+# Run analyzer tests
 ./gradlew :analyzer:test
 
-# Run Android app unit tests (architecture boundary, route serialization, manifest security audit)
-./gradlew :app:testDebugUnitTest
+# Run unit tests and assemble debug APK
+./gradlew :app:testDebugUnitTest :app:assembleDebug
+```
+Debug APK generated at: `apps/android/app/build/outputs/apk/debug/app-debug.apk`.
 
-# Assemble debug APK
-./gradlew :app:assembleDebug
+### 3. Database & Cloud Sync (`packages/supabase-config`)
 
-# Compile instrumented UI tests
-./gradlew :app:assembleDebugAndroidTest
+Apply migrations in your Supabase project:
+1. `packages/supabase-config/migrations/20261114000001_initial_schema.sql`
+2. `packages/supabase-config/migrations/20261114000002_device_pairing.sql`
 
-# Run Android Lint checks
-./gradlew :app:lintDebug
+Configure environment variables in `apps/web/.env.local`:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 ---
 
-## 📄 License & Attribution
+## 📱 Features
 
-- Built with modern Android best practices (Jetpack Compose, Hilt, Coroutines, Flow, Kotlin Symbol Processing).
-- Follows [RFC 3986](https://datatracker.ietf.org/doc/html/rfc3986) (URI Generic Syntax), [RFC 3492](https://datatracker.ietf.org/doc/html/rfc3492) (Punycode), and [RFC 2606](https://datatracker.ietf.org/doc/html/rfc2606) (Reserved Top Level DNS Names).
-- Public Suffix List data provided by the Mozilla Public Suffix List project under MPL-2.0.
-
-Developed by [Adwait Pratap Singh](https://github.com/AdwaitPr).
+- **Multi-Source Ingestion**: Pasted text, shared SMS messages, and QR payloads.
+- **Explainable Findings**: 25 standardized rule codes (`U001` - `U017`, `M001` - `M006`, `Q001` - `Q002`) with observable evidence.
+- **Anonymous-First Pairing**: 6-digit PIN device linking without mandatory accounts.
+- **Cross-Platform Sync**: Instant WebSocket state synchronization between mobile and web.
