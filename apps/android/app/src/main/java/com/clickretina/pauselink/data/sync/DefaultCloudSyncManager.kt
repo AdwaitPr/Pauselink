@@ -18,7 +18,6 @@ class DefaultCloudSyncManager @Inject constructor() : CloudSyncManager {
 
     override suspend fun setSyncEnabled(enabled: Boolean) {
         _isSyncEnabled.value = enabled
-        AppLogger.d("Sync preference updated: $enabled")
     }
 
     override suspend fun pairWithCode(code: String): Result<Unit> {
@@ -33,11 +32,10 @@ class DefaultCloudSyncManager @Inject constructor() : CloudSyncManager {
             val userId = "device_user_" + trimmed.take(4)
             _pairingStatus.value = PairingStatus.Paired(userId, System.currentTimeMillis().toString())
             _isSyncEnabled.value = true
-            AppLogger.d("Device paired successfully with web console")
             Result.success(Unit)
         } catch (e: Exception) {
             _pairingStatus.value = PairingStatus.Error(e.javaClass.simpleName)
-            AppLogger.e("Pairing failed: ${e.javaClass.simpleName}")
+            AppLogger.logError(e.javaClass.simpleName)
             Result.failure(e)
         }
     }
@@ -45,10 +43,9 @@ class DefaultCloudSyncManager @Inject constructor() : CloudSyncManager {
     override suspend fun generatePairingCode(): Result<String> {
         return try {
             val code = (100000..999999).random().toString()
-            AppLogger.d("Generated device pairing PIN")
             Result.success(code)
         } catch (e: Exception) {
-            AppLogger.e("Failed to generate code: ${e.javaClass.simpleName}")
+            AppLogger.logError(e.javaClass.simpleName)
             Result.failure(e)
         }
     }
@@ -59,10 +56,9 @@ class DefaultCloudSyncManager @Inject constructor() : CloudSyncManager {
         }
 
         return try {
-            AppLogger.d("Scan queued for cloud sync")
             Result.success(Unit)
         } catch (e: Exception) {
-            AppLogger.e("Failed to sync scan: ${e.javaClass.simpleName}")
+            AppLogger.logError(e.javaClass.simpleName)
             Result.failure(e)
         }
     }
