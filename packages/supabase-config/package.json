@@ -1,0 +1,6 @@
+{
+  "name": "@pauselink/supabase-config",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Supabase PostgreSQL DDL, Row Level Security policies, and migrations for PauseLink"
+}
