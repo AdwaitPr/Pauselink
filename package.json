@@ -1,8 +1,9 @@
 {
   "name": "pauselink-ecosystem",
   "private": true,
+  "packageManager": "npm@11.4.2",
   "workspaces": [
-    "apps/*",
+    "apps/web",
     "packages/*"
   ],
   "scripts": {
@@ -14,5 +15,8 @@
   "devDependencies": {
     "turbo": "^2.4.4",
     "typescript": "^5.7.3"
+  },
+  "overrides": {
+    "postcss": "^8.5.33"
   }
 }
